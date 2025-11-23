@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDS PRO ULTIMATE</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header class="dashboard">
+        <div class="top-controls">
+            <button id="themeToggle" class="icon-btn" title="Dark Mode"><i class="fas fa-moon"></i></button>
+            <button id="badgeToggle" class="icon-btn" title="Badges"><i class="fas fa-trophy"></i></button>
+            <button id="dictToggle" class="icon-btn" title="Dictionary"><i class="fas fa-book"></i></button>
+            
+            <button id="errorModeBtn" class="icon-btn error-btn" title="Review Errors">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span class="badge-count" id="errorCount">0</span>
+            </button>
+            
+            <button id="modeToggle" class="icon-btn" title="Switch Mode"><i class="fas fa-gamepad"></i></button>
+        </div>
+
+        <div class="stats-wrapper">
+            <div class="stat-box">
+                <span class="label">TOTAL</span>
+                <span class="value" id="totalWords">0</span>
+            </div>
+            <div class="stat-box success">
+                <span class="label">MASTERED</span>
+                <span class="value" id="learnedWords">0</span>
+            </div>
+        </div>
+
+        <button id="resetBtn" class="icon-btn" title="Reset"><i class="fas fa-trash-alt"></i></button>
+    </header>
+
+    <main class="container">
+        <div class="card-wrapper" id="flashcardMode">
+            <div class="flip-card" id="cardElement">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-header">
+                            <span class="word-id" id="wordId">#1</span>
+                            <button id="favBtn" class="fav-btn"><i class="far fa-star"></i></button>
+                        </div>
+                        <h1 id="wordEnglish">WORD</h1>
+                        <button id="btnSpeak" class="speak-btn"><i class="fas fa-volume-up"></i></button>
+                        <p class="tap-hint">Tap or Space</p>
+                    </div>
+                    <div class="flip-card-back">
+                        <h2 id="wordMeaning">Meaning</h2>
+                        <div class="details">
+                            <div class="detail-item"><i class="fas fa-exchange-alt"></i> <span id="wordSynonym">-</span></div>
+                            <div class="detail-item example-box"><i class="fas fa-quote-left"></i> <p id="wordExample">-</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="btnFail" class="btn btn-fail"><i class="fas fa-times"></i> I DON'T KNOW</button>
+                <button id="btnPass" class="btn btn-pass"><i class="fas fa-check"></i> I KNOW</button>
+            </div>
+        </div>
+
+        <div class="quiz-wrapper hidden" id="quizMode">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">QUIZ MODE</span>
+                    <button id="quizFavBtn" class="fav-btn"><i class="far fa-star"></i></button>
+                </div>
+                <h1 id="quizWord">WORD</h1>
+                <button id="quizSpeak" class="speak-btn small"><i class="fas fa-volume-up"></i></button>
+                <div class="quiz-options" id="quizOptions"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="badgeModal" class="modal hidden">
+        <div class="modal-content badge-content">
+            <div class="modal-header">
+                <h2>Achievements</h2>
+                <span class="close-modal" id="closeBadge">&times;</span>
+            </div>
+            <div class="badge-grid" id="badgeList"></div>
+        </div>
+    </div>
+
+    <div id="dictionaryModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Dictionary</h2>
+                <span class="close-modal" id="closeDict">&times;</span>
+            </div>
+            <div class="modal-search">
+                <input type="text" id="searchInput" placeholder="Search words...">
+                <button id="filterFavs" class="filter-btn" title="Favorites"><i class="far fa-star"></i></button>
+                <button id="filterErrors" class="filter-btn" title="Errors"><i class="fas fa-exclamation-circle"></i></button>
+            </div>
+            <div class="word-list" id="wordList"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden">
+        <div class="toast-icon"><i class="fas fa-trophy"></i></div>
+        <div class="toast-body">
+            <h4>New Badge Unlocked!</h4>
+            <p id="toastMessage">Mastery Level 1</p>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
