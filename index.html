@@ -24,7 +24,9 @@
                 <span class="badge-count" id="errorCount">0</span>
             </button>
             
-            <button id="modeToggle" class="icon-btn" title="Switch Mode"><i class="fas fa-gamepad"></i></button>
+            <button id="modeToggle" class="icon-btn mode-btn" title="Switch Mode">
+                <i class="fas fa-layer-group"></i>
+            </button>
         </div>
 
         <div class="stats-wrapper">
@@ -38,11 +40,19 @@
             </div>
         </div>
 
-        <button id="resetBtn" class="icon-btn" title="Reset"><i class="fas fa-trash-alt"></i></button>
+        <div class="right-controls">
+            <div class="streak-box" id="streakBox" title="Daily Streak">
+                <i class="fas fa-fire"></i>
+                <span id="streakCount">0</span>
+            </div>
+
+            <button id="resetBtn" class="icon-btn" title="Reset"><i class="fas fa-trash-alt"></i></button>
+        </div>
     </header>
 
     <main class="container">
-        <div class="card-wrapper" id="flashcardMode">
+        
+        <div class="mode-wrapper" id="flashcardMode">
             <div class="flip-card" id="cardElement">
                 <div class="flip-card-inner">
                     <div class="flip-card-front">
@@ -55,7 +65,7 @@
                         <p class="tap-hint">Tap or Space</p>
                     </div>
                     <div class="flip-card-back">
-                        <h2 id="wordMeaning">Meaning</h2>
+                        <p id="wordDefinition" class="def-text">Definition...</p>
                         <div class="details">
                             <div class="detail-item"><i class="fas fa-exchange-alt"></i> <span id="wordSynonym">-</span></div>
                             <div class="detail-item example-box"><i class="fas fa-quote-left"></i> <p id="wordExample">-</p></div>
@@ -69,17 +79,32 @@
             </div>
         </div>
 
-        <div class="quiz-wrapper hidden" id="quizMode">
+        <div class="mode-wrapper hidden" id="quizMode">
             <div class="quiz-card">
                 <div class="quiz-header">
                     <span class="quiz-badge">QUIZ MODE</span>
                     <button id="quizFavBtn" class="fav-btn"><i class="far fa-star"></i></button>
                 </div>
                 <h1 id="quizWord">WORD</h1>
+                <p id="quizDefinition" class="quiz-def-text"></p>
                 <button id="quizSpeak" class="speak-btn small"><i class="fas fa-volume-up"></i></button>
                 <div class="quiz-options" id="quizOptions"></div>
             </div>
         </div>
+
+        <div class="mode-wrapper hidden" id="sentenceMode">
+            <div class="quiz-card sentence-card-style">
+                <div class="quiz-header">
+                    <span class="quiz-badge sentence-badge">CONTEXT MASTER</span>
+                    <button id="sentFavBtn" class="fav-btn"><i class="far fa-star"></i></button>
+                </div>
+                <div class="sentence-display">
+                    <p id="sentenceText">Loading sentence...</p>
+                </div>
+                <div class="quiz-options" id="sentenceOptions"></div>
+            </div>
+        </div>
+
     </main>
 
     <div id="badgeModal" class="modal hidden">

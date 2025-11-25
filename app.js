@@ -6,10 +6,13 @@ let errorCards = [];
 let earnedBadges = [];
 let cardPool = [];
 let isDarkMode = false;
-let isQuizMode = false;
+let activeMode = 'flashcard'; 
 let isFilterFav = false;
 let isFilterError = false;
 let isErrorReviewMode = false;
+
+let streakCount = 0;
+let lastStreakDate = "";
 
 const BADGES = [
     { id: 'b1', name: 'Newbie', count: 10, icon: '👶' },
@@ -20,13 +23,14 @@ const BADGES = [
     { id: 'b6', name: 'Legend', count: 1000, icon: '🚀' }
 ];
 
-// DOM ELEMENTS
 const els = {
     flashcardMode: document.getElementById('flashcardMode'),
     quizMode: document.getElementById('quizMode'),
+    sentenceMode: document.getElementById('sentenceMode'),
+    
     card: document.getElementById('cardElement'),
     en: document.getElementById('wordEnglish'),
-    tr: document.getElementById('wordMeaning'),
+    def: document.getElementById('wordDefinition'),
     syn: document.getElementById('wordSynonym'),
     ex: document.getElementById('wordExample'),
     id: document.getElementById('wordId'),
@@ -34,6 +38,9 @@ const els = {
     learned: document.getElementById('learnedWords'),
     progressBar: document.getElementById('progressBar'),
     
+    streakBox: document.getElementById('streakBox'),
+    streakCount: document.getElementById('streakCount'),
+
     btnFail: document.getElementById('btnFail'),
     btnPass: document.getElementById('btnPass'),
     btnReset: document.getElementById('resetBtn'),
@@ -46,9 +53,14 @@ const els = {
     errorCount: document.getElementById('errorCount'),
     
     quizWord: document.getElementById('quizWord'),
+    quizDef: document.getElementById('quizDefinition'),
     quizOptions: document.getElementById('quizOptions'),
     quizSpeak: document.getElementById('quizSpeak'),
     quizFavBtn: document.getElementById('quizFavBtn'),
+    
+    sentenceText: document.getElementById('sentenceText'),
+    sentenceOptions: document.getElementById('sentenceOptions'),
+    sentFavBtn: document.getElementById('sentFavBtn'),
     
     dictToggle: document.getElementById('dictToggle'),
     dictModal: document.getElementById('dictionaryModal'),
@@ -60,26 +72,27 @@ const els = {
     badgeList: document.getElementById('badgeList'),
     filterFavs: document.getElementById('filterFavs'),
     filterErrors: document.getElementById('filterErrors'),
-    
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toastMessage')
 };
 
-// --- INIT ---
 function init() {
     loadData();
     updateStats();
+    checkStreak();
     
     els.btnFail.addEventListener('click', () => handleAnswer(false));
     els.btnPass.addEventListener('click', () => handleAnswer(true));
     els.card.addEventListener('click', (e) => {
         if(!e.target.closest('button')) els.card.classList.toggle('flipped');
     });
-    
     els.btnSpeak.addEventListener('click', (e) => { e.stopPropagation(); speak(currentCard.word); });
     els.quizSpeak.addEventListener('click', () => speak(currentCard.word));
+    
     els.favBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFav(); });
     els.quizFavBtn.addEventListener('click', toggleFav);
+    els.sentFavBtn.addEventListener('click', toggleFav);
+    
     els.btnReset.addEventListener('click', resetAll);
     els.themeToggle.addEventListener('click', toggleTheme);
     els.modeToggle.addEventListener('click', toggleMode);
@@ -90,25 +103,19 @@ function init() {
     els.closeBadge.addEventListener('click', () => els.badgeModal.classList.add('hidden'));
     
     els.errorModeBtn.addEventListener('click', toggleErrorReviewMode);
-
     els.searchInput.addEventListener('input', renderDict);
-    
     els.filterFavs.addEventListener('click', () => {
         isFilterFav = !isFilterFav;
         els.filterFavs.classList.toggle('active-fav', isFilterFav);
         renderDict();
     });
-
     els.filterErrors.addEventListener('click', () => {
         isFilterError = !isFilterError;
         els.filterErrors.classList.toggle('active-error', isFilterError);
         renderDict();
     });
-
     pickNewCard();
 }
-
-// --- CORE ---
 
 function loadData() {
     if(localStorage.getItem('ydspro_theme') === 'dark') toggleTheme();
@@ -116,7 +123,9 @@ function loadData() {
     favCards = JSON.parse(localStorage.getItem('ydspro_favs') || '[]');
     earnedBadges = JSON.parse(localStorage.getItem('ydspro_badges') || '[]');
     errorCards = JSON.parse(localStorage.getItem('ydspro_errors') || '[]');
-    
+    streakCount = parseInt(localStorage.getItem('ydspro_streak_count') || '0');
+    lastStreakDate = localStorage.getItem('ydspro_streak_date') || '';
+
     cardPool = wordData.filter(w => !learnedCards.includes(w.id));
 }
 
@@ -125,8 +134,41 @@ function saveData() {
     localStorage.setItem('ydspro_favs', JSON.stringify(favCards));
     localStorage.setItem('ydspro_badges', JSON.stringify(earnedBadges));
     localStorage.setItem('ydspro_errors', JSON.stringify(errorCards));
+    localStorage.setItem('ydspro_streak_count', streakCount.toString());
+    localStorage.setItem('ydspro_streak_date', lastStreakDate);
+
     updateStats();
     checkBadges();
+}
+
+function checkStreak() {
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+    if (lastStreakDate !== today && lastStreakDate !== yesterday) {
+        if (lastStreakDate !== "") streakCount = 0;
+    }
+    updateStreakUI();
+}
+
+function updateStreak(isCorrect) {
+    if (!isCorrect) return;
+    const today = new Date().toDateString();
+    if (lastStreakDate === today) return;
+
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (lastStreakDate === yesterday) streakCount++;
+    else streakCount = 1;
+
+    lastStreakDate = today;
+    saveData();
+    updateStreakUI();
+}
+
+function updateStreakUI() {
+    els.streakCount.textContent = streakCount;
+    if (streakCount > 0) els.streakBox.classList.add('active');
+    else els.streakBox.classList.remove('active');
 }
 
 function updateStats() {
@@ -144,10 +186,8 @@ function toggleErrorReviewMode() {
     }
     isErrorReviewMode = !isErrorReviewMode;
     document.body.classList.toggle('error-mode-active', isErrorReviewMode);
-    
-    if(isErrorReviewMode) {
-        els.errorModeBtn.innerHTML = '<i class="fas fa-times"></i> Exit';
-    } else {
+    if(isErrorReviewMode) els.errorModeBtn.innerHTML = '<i class="fas fa-times"></i> Exit';
+    else {
         els.errorModeBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span class="badge-count" id="errorCount">'+errorCards.length+'</span>';
         els.errorCount = document.getElementById('errorCount');
     }
@@ -188,21 +228,29 @@ function openBadges() {
 }
 
 function toggleMode() {
-    isQuizMode = !isQuizMode;
-    els.modeToggle.innerHTML = isQuizMode ? '<i class="fas fa-layer-group"></i>' : '<i class="fas fa-gamepad"></i>';
-    if(isQuizMode) {
-        els.flashcardMode.classList.add('hidden');
-        els.quizMode.classList.remove('hidden');
-    } else {
-        els.quizMode.classList.add('hidden');
+    if(activeMode === 'flashcard') activeMode = 'quiz';
+    else if(activeMode === 'quiz') activeMode = 'sentence';
+    else activeMode = 'flashcard';
+
+    els.flashcardMode.classList.add('hidden');
+    els.quizMode.classList.add('hidden');
+    els.sentenceMode.classList.add('hidden');
+
+    if(activeMode === 'flashcard') {
+        els.modeToggle.innerHTML = '<i class="fas fa-layer-group"></i>';
         els.flashcardMode.classList.remove('hidden');
+    } else if(activeMode === 'quiz') {
+        els.modeToggle.innerHTML = '<i class="fas fa-gamepad"></i>';
+        els.quizMode.classList.remove('hidden');
+    } else if(activeMode === 'sentence') {
+        els.modeToggle.innerHTML = '<i class="fas fa-align-left"></i>';
+        els.sentenceMode.classList.remove('hidden');
     }
     pickNewCard();
 }
 
 function pickNewCard() {
     els.card.classList.remove('swipe-right', 'swipe-left', 'flipped');
-    
     let activePool = [];
     if (isErrorReviewMode) {
         activePool = wordData.filter(w => errorCards.includes(w.id));
@@ -218,17 +266,17 @@ function pickNewCard() {
             return;
         }
     }
-
     currentCard = activePool[Math.floor(Math.random() * activePool.length)];
     const isFav = favCards.includes(currentCard.id);
 
-    if(isQuizMode) setupQuiz(isFav);
+    if(activeMode === 'quiz') setupQuiz(isFav);
+    else if(activeMode === 'sentence') setupSentence(isFav);
     else setupFlashcard(isFav);
 }
 
 function setupFlashcard(isFav) {
     els.en.textContent = currentCard.word;
-    els.tr.textContent = currentCard.meaning;
+    els.def.textContent = currentCard.definition || "";
     els.syn.textContent = currentCard.synonyms || "-";
     els.ex.textContent = currentCard.example || "-";
     els.id.textContent = `#${currentCard.id}`;
@@ -237,46 +285,61 @@ function setupFlashcard(isFav) {
 
 function setupQuiz(isFav) {
     els.quizWord.textContent = currentCard.word;
+    // HINT KISMI KALDIRILDI
+    els.quizDef.textContent = ""; 
+    
     updateFavIcon(els.quizFavBtn, isFav);
+    generateOptions(els.quizOptions, 'definition', currentCard.definition);
+}
+
+function setupSentence(isFav) {
+    const hiddenSentence = currentCard.example.replace(new RegExp(currentCard.word, "gi"), "<span class='blank-space'>_____</span>");
+    els.sentenceText.innerHTML = hiddenSentence;
+    updateFavIcon(els.sentFavBtn, isFav);
+    generateOptions(els.sentenceOptions, 'word', currentCard.word);
+}
+
+function generateOptions(container, type, correctAnswer) {
     let options = [currentCard];
     while(options.length < 4) {
         let randomW = wordData[Math.floor(Math.random() * wordData.length)];
         if(!options.includes(randomW)) options.push(randomW);
     }
     options.sort(() => Math.random() - 0.5);
-    els.quizOptions.innerHTML = '';
+    container.innerHTML = '';
     options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
-        btn.textContent = opt.meaning;
-        btn.onclick = () => checkQuizAnswer(btn, opt.id === currentCard.id);
-        els.quizOptions.appendChild(btn);
+        btn.textContent = opt[type];
+        btn.onclick = () => checkAnswer(btn, opt.id === currentCard.id, container);
+        container.appendChild(btn);
     });
 }
 
-function checkQuizAnswer(btn, isCorrect) {
-    const allBtns = document.querySelectorAll('.quiz-opt');
+function checkAnswer(btn, isCorrect, container) {
+    const allBtns = container.querySelectorAll('.quiz-opt');
     allBtns.forEach(b => b.disabled = true);
     if(isCorrect) {
         btn.classList.add('correct');
         setTimeout(() => handleAnswer(true), 1000);
     } else {
         btn.classList.add('wrong');
+        let correctText = activeMode === 'sentence' ? currentCard.word : currentCard.definition;
         allBtns.forEach(b => {
-            if(b.textContent === currentCard.meaning) b.classList.add('correct');
+            if(b.textContent === correctText) b.classList.add('correct');
         });
         setTimeout(() => handleAnswer(false), 1500);
     }
 }
 
 function handleAnswer(known) {
-    if(!isQuizMode) els.card.classList.add(known ? 'swipe-right' : 'swipe-left');
+    if(known) updateStreak(true);
 
+    if(activeMode === 'flashcard') els.card.classList.add(known ? 'swipe-right' : 'swipe-left');
     setTimeout(() => {
         if(known) {
-            if(isErrorReviewMode) {
-                errorCards = errorCards.filter(id => id !== currentCard.id);
-            } else {
+            if(isErrorReviewMode) errorCards = errorCards.filter(id => id !== currentCard.id);
+            else {
                 learnedCards.push(currentCard.id);
                 cardPool = cardPool.filter(w => w.id !== currentCard.id);
                 if(errorCards.includes(currentCard.id)) errorCards = errorCards.filter(id => id !== currentCard.id);
@@ -286,7 +349,7 @@ function handleAnswer(known) {
         }
         saveData();
         pickNewCard();
-    }, isQuizMode ? 0 : 500);
+    }, activeMode === 'flashcard' ? 500 : 0);
 }
 
 function toggleFav() {
@@ -296,6 +359,7 @@ function toggleFav() {
     const isFav = favCards.includes(currentCard.id);
     updateFavIcon(els.favBtn, isFav);
     updateFavIcon(els.quizFavBtn, isFav);
+    updateFavIcon(els.sentFavBtn, isFav);
 }
 
 function updateFavIcon(btn, isFav) {
@@ -319,34 +383,29 @@ function openDict() {
 function renderDict() {
     const term = els.searchInput.value.toLowerCase();
     els.wordList.innerHTML = '';
-    
     const filtered = wordData.filter(w => {
-        const matchesSearch = w.word.toLowerCase().includes(term) || w.meaning.toLowerCase().includes(term);
+        const matchesSearch = w.word.toLowerCase().includes(term) || w.definition.toLowerCase().includes(term);
         const matchesFav = isFilterFav ? favCards.includes(w.id) : true;
         const matchesError = isFilterError ? errorCards.includes(w.id) : true;
         return matchesSearch && matchesFav && matchesError;
     });
-
     const displayList = term ? filtered : filtered.slice(0, 100);
-
     if (displayList.length === 0) {
         els.wordList.innerHTML = '<div style="padding:20px; text-align:center; color:#999;">No words found.</div>';
         return;
     }
-
     displayList.forEach(w => {
         const div = document.createElement('div');
         div.className = 'dict-item';
         if(learnedCards.includes(w.id)) div.classList.add('learned');
-        
         const isFav = favCards.includes(w.id);
         const isErr = errorCards.includes(w.id);
-
         div.innerHTML = `
             <div style="text-align:left;">
                 <strong>${w.word}</strong> 
-                ${isErr ? '<span style="color:#e74c3c; font-size:0.8em; margin-left:5px;"><i class="fas fa-exclamation-triangle"></i></span>' : ''}
-                <br> <small>${w.meaning}</small>
+                ${isErr ? '<span style="color:#e74c3c; margin-left:5px;"><i class="fas fa-exclamation-triangle"></i></span>' : ''}
+                <br>
+                <small style="color:#95a5a6">${w.definition}</small>
             </div>
             <div>${isFav ? '<i class="fas fa-star" style="color:#f1c40f"></i>' : ''}</div>
         `;
