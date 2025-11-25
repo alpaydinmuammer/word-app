@@ -11,6 +11,7 @@ let isFilterFav = false;
 let isFilterError = false;
 let isErrorReviewMode = false;
 
+// STREAK DEĞİŞKENLERİ
 let streakCount = 0;
 let lastStreakDate = "";
 
@@ -81,11 +82,13 @@ function init() {
     updateStats();
     checkStreak();
     
+    // Mouse Listeners
     els.btnFail.addEventListener('click', () => handleAnswer(false));
     els.btnPass.addEventListener('click', () => handleAnswer(true));
     els.card.addEventListener('click', (e) => {
         if(!e.target.closest('button')) els.card.classList.toggle('flipped');
     });
+    
     els.btnSpeak.addEventListener('click', (e) => { e.stopPropagation(); speak(currentCard.word); });
     els.quizSpeak.addEventListener('click', () => speak(currentCard.word));
     
@@ -114,6 +117,45 @@ function init() {
         els.filterErrors.classList.toggle('active-error', isFilterError);
         renderDict();
     });
+
+    // --- KLAVYE KISAYOLLARI ---
+    document.addEventListener('keydown', (e) => {
+        if(document.activeElement === els.searchInput) {
+            if(e.key === 'Escape') els.dictModal.classList.add('hidden');
+            return;
+        }
+
+        if (e.code === 'Space') {
+            e.preventDefault();
+            if(activeMode === 'flashcard') els.card.classList.toggle('flipped');
+        }
+        else if (e.key === 'ArrowRight') handleAnswer(true);
+        else if (e.key === 'ArrowLeft') handleAnswer(false);
+        else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            speak(currentCard.word);
+        }
+        
+        else if (e.key.toLowerCase() === 'f') toggleFav();
+        else if (e.key.toLowerCase() === 'm') toggleMode();
+        else if (e.key.toLowerCase() === 'd') openDict();
+        else if (e.key === 'Escape') {
+            els.dictModal.classList.add('hidden');
+            els.badgeModal.classList.add('hidden');
+        }
+        
+        else if (['1', '2', '3', '4'].includes(e.key)) {
+            if (activeMode === 'quiz' || activeMode === 'sentence') {
+                const index = parseInt(e.key) - 1;
+                const container = activeMode === 'quiz' ? els.quizOptions : els.sentenceOptions;
+                const buttons = container.querySelectorAll('.quiz-opt');
+                if (buttons[index] && !buttons[index].disabled) {
+                    buttons[index].click();
+                }
+            }
+        }
+    });
+
     pickNewCard();
 }
 
@@ -210,8 +252,7 @@ function checkBadges() {
 function showToast(badgeName) {
     els.toastMessage.textContent = `You earned the "${badgeName}" badge!`;
     els.toast.classList.remove('hidden');
-    const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
-    audio.play().catch(e=>{});
+    // Ses efektini kaldırdık, sadece görsel uyarı
     setTimeout(() => els.toast.classList.add('hidden'), 3000);
 }
 
@@ -285,9 +326,7 @@ function setupFlashcard(isFav) {
 
 function setupQuiz(isFav) {
     els.quizWord.textContent = currentCard.word;
-    // HINT KISMI KALDIRILDI
-    els.quizDef.textContent = ""; 
-    
+    els.quizDef.textContent = ""; // HINT KALDIRILDI
     updateFavIcon(els.quizFavBtn, isFav);
     generateOptions(els.quizOptions, 'definition', currentCard.definition);
 }
@@ -307,10 +346,11 @@ function generateOptions(container, type, correctAnswer) {
     }
     options.sort(() => Math.random() - 0.5);
     container.innerHTML = '';
-    options.forEach(opt => {
+    options.forEach((opt, index) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
-        btn.textContent = opt[type];
+        const numberPrefix = `<span style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
+        btn.innerHTML = numberPrefix + opt[type];
         btn.onclick = () => checkAnswer(btn, opt.id === currentCard.id, container);
         container.appendChild(btn);
     });
@@ -326,7 +366,7 @@ function checkAnswer(btn, isCorrect, container) {
         btn.classList.add('wrong');
         let correctText = activeMode === 'sentence' ? currentCard.word : currentCard.definition;
         allBtns.forEach(b => {
-            if(b.textContent === correctText) b.classList.add('correct');
+            if(b.innerText.includes(correctText)) b.classList.add('correct');
         });
         setTimeout(() => handleAnswer(false), 1500);
     }
@@ -366,12 +406,37 @@ function updateFavIcon(btn, isFav) {
     btn.innerHTML = isFav ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
 }
 
+// GÜÇLENDİRİLMİŞ MOBİL UYUMLU SPEAK FONKSİYONU
 function speak(text) {
-    if('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'en-US';
-        window.speechSynthesis.speak(u);
+    if (!('speechSynthesis' in window)) {
+        alert("Browser does not support speech.");
+        return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+            setEnglishVoice(utterance, voices);
+            window.speechSynthesis.speak(utterance);
+        };
+        return;
+    }
+    setEnglishVoice(utterance, voices);
+    window.speechSynthesis.speak(utterance);
+}
+
+function setEnglishVoice(utterance, voices) {
+    const preferredVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) 
+                        || voices.find(v => v.lang === 'en-US' && v.name.includes('Samantha')) 
+                        || voices.find(v => v.lang.includes('en-US')) 
+                        || voices.find(v => v.lang.includes('en-GB'));
+    if (preferredVoice) {
+        utterance.voice = preferredVoice;
+        utterance.lang = preferredVoice.lang;
     }
 }
 
