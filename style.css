@@ -159,30 +159,51 @@ h1 { font-size: 2.5em; color: var(--primary); margin: 10px 0; }
 .swipe-right { animation: flyRight 0.5s ease-out forwards; }
 .swipe-left { animation: flyLeft 0.5s ease-out forwards; }
 
-/* --- MOBİL UYUM (RESPONSIVE) --- */
+/* --- MOBİL UYUM (RESPONSIVE) - GÜNCELLENMİŞ --- */
 @media (max-width: 768px) {
     body {
-        padding: 15px;
-        box-sizing: border-box;
-        justify-content: space-between; 
-        padding-bottom: 30px; 
-    }
-
-    .dashboard {
-        width: 100%;
-        margin-top: 0;
-        margin-bottom: 15px;
         padding: 10px;
-        box-sizing: border-box; 
+        box-sizing: border-box;
+        padding-bottom: 20px;
     }
-    
-    /* İstatistikleri mobilde biraz küçültelim */
-    .stats-wrapper { gap: 10px; }
-    .stat-box .value { font-size: 1em; }
 
+    /* HEADER'I İKİ SATIRA BÖLME İŞLEMİ */
+    .dashboard {
+        flex-wrap: wrap; /* Elemanların alt satıra geçmesine izin ver */
+        justify-content: center; /* Ortala */
+        gap: 15px; /* Satırlar arası boşluk */
+        padding: 15px;
+    }
+
+    /* Üst Satır: Butonlar */
+    .top-controls, .right-controls {
+        flex: 1 1 auto; /* Esnek ol, gerektiğinde küçül/büyü */
+        justify-content: center; /* Kendi içinde ortala */
+    }
+
+    /* Sağdaki reset butonu ile alevin arasını açalım */
+    .right-controls {
+        gap: 20px;
+    }
+
+    /* Alt Satır: İstatistikler (Tam genişlik verip ortalayacağız) */
+    .stats-wrapper {
+        width: 100%; /* Yeni satıra geç ve tam genişlik ol */
+        display: flex;
+        justify-content: center;
+        gap: 30px; /* İki istatistik arası boşluk */
+        padding-top: 10px;
+        border-top: 1px solid var(--border); /* Üstüne ince bir çizgi çek */
+    }
+
+    /* İstatistik yazılarını biraz belirginleştir */
+    .stat-box .label { font-size: 0.7em; }
+    .stat-box .value { font-size: 1.3em; }
+    
+    /* Kart ve Diğerleri */
     .flip-card {
-        height: 50vh; 
-        max-height: 400px; 
+        height: 45vh; /* Biraz daha kısalttık */
+        max-height: 380px; 
         width: 100%; 
     }
 
@@ -193,10 +214,11 @@ h1 { font-size: 2.5em; color: var(--primary); margin: 10px 0; }
 
     .controls {
         width: 100%;
-        margin-top: 20px;
+        margin-top: 15px;
         margin-bottom: 10px;
     }
     
-    h1 { font-size: 2.2em; }
+    h1 { font-size: 2em; }
     .def-text { font-size: 1.1em; }
+    .speak-btn { width: 35px; height: 35px; } /* Ses butonunu azıcık küçült */
 }
