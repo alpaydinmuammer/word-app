@@ -9,6 +9,7 @@
     --purple: #9b59b6;
     --gold: #f1c40f;
     --fire: #ff5722;
+    --speed: #e67e22;
     --shadow: rgba(0,0,0,0.1);
     --border: #e0e0e0;
     --modal-bg: rgba(0,0,0,0.5);
@@ -36,37 +37,12 @@ body {
 .icon-btn { background: none; border: none; color: var(--text-sub); font-size: 1.2em; cursor: pointer; transition: 0.3s; position: relative; }
 .icon-btn:hover { color: var(--primary); transform: scale(1.1); }
 
-/* Right Controls & Streak */
 .right-controls { display: flex; align-items: center; gap: 15px; }
-
-.streak-box {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: rgba(0,0,0,0.05);
-    padding: 5px 10px;
-    border-radius: 20px;
-    color: var(--text-sub);
-    font-weight: bold;
-    border: 1px solid transparent;
-    transition: 0.3s;
-}
+.streak-box { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.05); padding: 5px 10px; border-radius: 20px; color: var(--text-sub); font-weight: bold; border: 1px solid transparent; transition: 0.3s; }
 .streak-box i { color: #ccc; transition: 0.3s; }
-
-.streak-box.active {
-    border-color: var(--fire);
-    color: var(--fire);
-    background: rgba(255, 87, 34, 0.1);
-}
-.streak-box.active i {
-    color: var(--fire);
-    animation: burn 1.2s infinite alternate;
-}
-
-@keyframes burn {
-    0% { transform: scale(1); opacity: 0.7; }
-    100% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 10px var(--fire); }
-}
+.streak-box.active { border-color: var(--fire); color: var(--fire); background: rgba(255, 87, 34, 0.1); }
+.streak-box.active i { color: var(--fire); animation: burn 1.2s infinite alternate; }
+@keyframes burn { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 10px var(--fire); } }
 
 .error-btn { color: var(--danger) !important; transition: 0.3s; }
 .error-btn:hover { transform: scale(1.1); }
@@ -83,10 +59,8 @@ body {
 .stat-box.success .value { color: var(--success); }
 
 .container { width: 90%; max-width: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-
 .mode-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-/* FLASHCARD STYLES */
 .flip-card { width: 100%; height: 450px; perspective: 1000px; cursor: pointer; }
 .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; border-radius: 20px; box-shadow: 0 10px 30px var(--shadow); }
 .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
@@ -124,7 +98,24 @@ h1 { font-size: 2.5em; color: var(--primary); margin: 10px 0; }
 #sentenceText { font-size: 1.2em; line-height: 1.5; font-weight: 500; color: var(--text-main); margin: 0; }
 .blank-space { border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 0 5px; }
 
-/* Modals */
+/* SPEED MODE STYLES */
+.speed-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; display: flex; justify-content: center; align-items: center; border-radius: 20px; backdrop-filter: blur(5px); }
+.speed-content { background: var(--card-bg); padding: 30px; border-radius: 20px; text-align: center; max-width: 80%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
+.speed-icon { font-size: 4em; color: var(--speed); margin-bottom: 15px; }
+.highscore-display { font-size: 1.2em; font-weight: bold; color: var(--gold); margin: 15px 0; }
+.speed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.timer-badge { font-size: 1.5em; font-weight: bold; color: var(--speed); }
+.score-badge { font-size: 1.2em; font-weight: bold; color: var(--text-main); }
+.close-speed { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; color: var(--text-sub); }
+.close-speed:hover { color: var(--danger); }
+
+/* Quiz Navigasyon Butonları */
+.quiz-nav-controls { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin-top: 20px; gap: 10px; }
+.nav-btn { width: 48%; padding: 10px 15px; font-size: 0.9em; font-weight: 500; }
+.nav-btn i { margin: 0 5px; }
+#prevBtnQuiz, #prevBtnSent { background-color: var(--danger); color: white; }
+#prevBtnQuiz:disabled, #prevBtnSent:disabled { opacity: 0.5; cursor: not-allowed; background-color: var(--danger); }
+
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
 .modal-content { background: var(--card-bg); width: 90%; max-width: 500px; height: 80%; border-radius: 20px; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -142,12 +133,12 @@ h1 { font-size: 2.5em; color: var(--primary); margin: 10px 0; }
 .filter-btn.active-error { background-color: rgba(231, 76, 60, 0.2); color: var(--danger); border-color: var(--danger); }
 
 .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; padding: 10px; overflow-y: auto; }
-.badge-item { background: var(--bg-color); border-radius: 15px; padding: 15px; text-align: center; border: 2px solid var(--border); transition: 0.3s; }
+.badge-item { background: var(--card-bg); border-radius: 15px; padding: 15px; text-align: center; border: 2px solid var(--border); transition: 0.3s; }
 .badge-icon { font-size: 2.5em; margin-bottom: 10px; display: block; filter: grayscale(100%); opacity: 0.5; transition: 0.5s; }
-.badge-name { font-size: 0.8em; font-weight: bold; color: var(--text-sub); display: block; }
 .badge-item.unlocked { border-color: var(--gold); background: rgba(241, 196, 15, 0.1); transform: scale(1.05); }
 .badge-item.unlocked .badge-icon { filter: grayscale(0%); opacity: 1; text-shadow: 0 0 10px var(--gold); }
 .badge-item.unlocked .badge-name { color: var(--text-main); }
+.badge-name { font-size: 0.8em; font-weight: bold; color: var(--text-sub); display: block; }
 
 .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--card-bg); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 3000; animation: slideUp 0.5s ease-out; border: 2px solid var(--gold); }
 .toast-icon { font-size: 2em; color: var(--gold); }
@@ -156,69 +147,22 @@ h1 { font-size: 2.5em; color: var(--primary); margin: 10px 0; }
 @keyframes slideUp { from { bottom: -100px; opacity: 0; } to { bottom: 30px; opacity: 1; } }
 @keyframes flyRight { to { transform: translateX(400px) rotate(30deg); opacity: 0; } }
 @keyframes flyLeft { to { transform: translateX(-400px) rotate(-30deg); opacity: 0; } }
-.swipe-right { animation: flyRight 0.5s ease-out forwards; }
-.swipe-left { animation: flyLeft 0.5s ease-out forwards; }
+.swipe-right { animation: flyRight 1s ease-out forwards; }
+.swipe-left { animation: flyLeft 1s ease-out forwards; }
 
-/* --- MOBİL UYUM (RESPONSIVE) - GÜNCELLENMİŞ --- */
+/* MOBİL UYUM */
 @media (max-width: 768px) {
-    body {
-        padding: 10px;
-        box-sizing: border-box;
-        padding-bottom: 20px;
-    }
-
-    /* HEADER'I İKİ SATIRA BÖLME İŞLEMİ */
-    .dashboard {
-        flex-wrap: wrap; /* Elemanların alt satıra geçmesine izin ver */
-        justify-content: center; /* Ortala */
-        gap: 15px; /* Satırlar arası boşluk */
-        padding: 15px;
-    }
-
-    /* Üst Satır: Butonlar */
-    .top-controls, .right-controls {
-        flex: 1 1 auto; /* Esnek ol, gerektiğinde küçül/büyü */
-        justify-content: center; /* Kendi içinde ortala */
-    }
-
-    /* Sağdaki reset butonu ile alevin arasını açalım */
-    .right-controls {
-        gap: 20px;
-    }
-
-    /* Alt Satır: İstatistikler (Tam genişlik verip ortalayacağız) */
-    .stats-wrapper {
-        width: 100%; /* Yeni satıra geç ve tam genişlik ol */
-        display: flex;
-        justify-content: center;
-        gap: 30px; /* İki istatistik arası boşluk */
-        padding-top: 10px;
-        border-top: 1px solid var(--border); /* Üstüne ince bir çizgi çek */
-    }
-
-    /* İstatistik yazılarını biraz belirginleştir */
+    body { padding: 10px; box-sizing: border-box; padding-bottom: 20px; }
+    .dashboard { flex-wrap: wrap; justify-content: center; gap: 15px; padding: 15px; }
+    .top-controls, .right-controls { flex: 1 1 auto; justify-content: center; }
+    .right-controls { gap: 20px; }
+    .stats-wrapper { width: 100%; display: flex; justify-content: center; gap: 30px; padding-top: 10px; border-top: 1px solid var(--border); }
     .stat-box .label { font-size: 0.7em; }
     .stat-box .value { font-size: 1.3em; }
-    
-    /* Kart ve Diğerleri */
-    .flip-card {
-        height: 45vh; /* Biraz daha kısalttık */
-        max-height: 380px; 
-        width: 100%; 
-    }
-
-    .container {
-        width: 100%;
-        justify-content: flex-start; 
-    }
-
-    .controls {
-        width: 100%;
-        margin-top: 15px;
-        margin-bottom: 10px;
-    }
-    
+    .flip-card { height: 45vh; max-height: 380px; width: 100%; }
+    .container { width: 100%; justify-content: flex-start; }
+    .controls { width: 100%; margin-top: 15px; margin-bottom: 10px; }
     h1 { font-size: 2em; }
     .def-text { font-size: 1.1em; }
-    .speak-btn { width: 35px; height: 35px; } /* Ses butonunu azıcık küçült */
+    .speak-btn { width: 35px; height: 35px; }
 }

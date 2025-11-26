@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YDS PRO ULTIMATE</title>
+    
+    <link rel="icon" type="image/jpeg" href="app_icon.jpg"> 
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -45,7 +49,6 @@
                 <i class="fas fa-fire"></i>
                 <span id="streakCount">0</span>
             </div>
-
             <button id="resetBtn" class="icon-btn" title="Reset"><i class="fas fa-trash-alt"></i></button>
         </div>
     </header>
@@ -90,6 +93,10 @@
                 <button id="quizSpeak" class="speak-btn small"><i class="fas fa-volume-up"></i></button>
                 <div class="quiz-options" id="quizOptions"></div>
             </div>
+            <div class="quiz-nav-controls" id="quizNavControls">
+                <button id="prevBtnQuiz" class="btn nav-btn btn-fail"><i class="fas fa-angle-left"></i> Previous</button>
+                <button id="nextBtnQuiz" class="btn nav-btn btn-pass">Next <i class="fas fa-angle-right"></i></button>
+            </div>
         </div>
 
         <div class="mode-wrapper hidden" id="sentenceMode">
@@ -102,6 +109,33 @@
                     <p id="sentenceText">Loading sentence...</p>
                 </div>
                 <div class="quiz-options" id="sentenceOptions"></div>
+            </div>
+            <div class="quiz-nav-controls" id="sentNavControls">
+                <button id="prevBtnSent" class="btn nav-btn btn-fail"><i class="fas fa-angle-left"></i> Previous</button>
+                <button id="nextBtnSent" class="btn nav-btn btn-pass">Next <i class="fas fa-angle-right"></i></button>
+            </div>
+        </div>
+
+        <div class="mode-wrapper hidden" id="speedMode">
+            <div id="speedStartScreen" class="speed-overlay">
+                <div class="speed-content">
+                    <span class="close-speed" id="exitSpeedMode">&times;</span>
+                    
+                    <i class="fas fa-stopwatch speed-icon"></i>
+                    <h2>Speed Run</h2>
+                    <p>60 Seconds. +2s for Correct, -5s for Wrong.</p>
+                    <div class="highscore-display">High Score: <span id="highScoreDisplay">0</span></div>
+                    <button id="startSpeedBtn" class="btn btn-pass" style="width:100%; margin-top:15px;">START GAME</button>
+                </div>
+            </div>
+
+            <div class="quiz-card speed-card-style">
+                <div class="speed-header">
+                    <div class="timer-badge"><i class="fas fa-clock"></i> <span id="speedTimer">60</span>s</div>
+                    <div class="score-badge">Score: <span id="speedScore">0</span></div>
+                </div>
+                <h1 id="speedWord" style="margin: 20px 0;">WORD</h1>
+                <div class="quiz-options" id="speedOptions"></div>
             </div>
         </div>
 
