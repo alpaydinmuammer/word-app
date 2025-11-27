@@ -412,7 +412,7 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 .swipe-left { animation: flyLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 .promote-card { animation: promoteToFront 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
-/* MOBİL UYUM VE DÜZELTMELER (Simetrik Yerleşim) */
+/* MOBİL UYUM VE DÜZELTMELER (Final - Tam Ortalı & Simetrik) */
 @media (max-width: 768px) {
     body { 
         padding: 10px; 
@@ -424,68 +424,63 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
     /* --- DASHBOARD --- */
     .dashboard { 
         position: relative; 
-        flex-direction: row; /* Yan yana dizilime izin ver */
-        flex-wrap: wrap;     /* Sığmayan aşağı kaysın */
-        justify-content: center; /* Yatayda ortala */
+        flex-direction: column; 
         align-items: center;
+        gap: 10px; /* Satırlar arası boşluk */
         padding: 15px 10px; 
         width: 100%;
-        margin: 10px 0 25px 0; 
-        gap: 15px; /* Satır ve öğe aralıkları */
+        margin: 10px 0 20px 0; 
     }
     
-    /* 1. SATIR: Menü İkonları */
+    /* 1. Satır: TÜM İKONLAR (Çöp Kutusu Dahil) */
     .top-controls { 
-        width: 100%; /* Tüm satırı kapla */
+        width: 100%; 
         display: flex;
-        justify-content: center; /* Ortala */
-        gap: 12px; 
-        padding-bottom: 12px;
+        flex-wrap: wrap; /* Sığmazsa taşsın */
+        justify-content: center; /* YATAYDA TAM ORTALA */
+        gap: 10px; /* İkonlar arası eşit boşluk */
+        
+        padding-bottom: 10px;
         border-bottom: 1px solid rgba(255,255,255,0.1); 
         margin-bottom: 5px;
+        
+        /* Önceki paddingleri SIFIRLIYORUZ */
         padding-right: 0; 
+        padding-left: 0;
     }
 
-    /* Çöp Kutusu (Reset) - Sağ Üst Köşeye Sabit */
-    /* Diğer ikonların hizasını bozmaması için absolute kullanıyoruz */
+    /* Çöp Kutusu (Reset) - Artık özgür, diğerleriyle yan yana */
     #resetBtn {
-        position: absolute;
-        top: 15px;
-        right: 15px; 
+        position: static; /* Sabitlemeyi kaldır */
+        top: auto;
+        right: auto;
         margin: 0;
-        z-index: 5;
     }
 
-    /* 2. SATIR: İstatistikler (Total, Mastered, Streak) */
-    
-    /* Total & Mastered Grubu */
-    .stats-wrapper { 
+    /* 2. Satır: İstatistikler & Streak */
+    .stats-wrapper, .right-controls { 
         width: auto; 
         display: flex; 
-        gap: 30px; /* Öğeler arası boşluk */
-        padding: 0; 
+        justify-content: center; 
+        align-items: center;
         border: none;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Streak (Ateş) Grubu */
-    .right-controls { 
-        width: auto; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* Total/Mastered ile Streak arasına boşluk koy */
-        margin-left: 15px; 
     }
     
-    /* Yazı Boyutları */
+    /* İkinci satırı da kendi içinde ortala ve hizala */
+    .dashboard > *:not(.top-controls) {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
     .stat-box .label { font-size: 0.65em; opacity: 0.7; }
     .stat-box .value { font-size: 1.3em; }
 
-    /* --- KART & DİĞER AYARLAR --- */
+    /* --- TAP TO FLIP YAZISI --- */
     .tap-hint {
-        margin-top: 25px !important; 
+        margin-top: 30px !important; 
         font-size: 0.85em !important; 
         font-weight: 600;
         letter-spacing: 2px;
@@ -497,6 +492,7 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
     .tap-hint::after { content: none; } 
     .key-shortcut { display: none !important; }
 
+    /* --- KART BOYUTLARI --- */
     .flip-card, .next-card-preview { 
         height: 45vh; 
         max-height: 400px; 
