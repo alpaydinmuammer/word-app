@@ -124,6 +124,15 @@ let nextCardEl = null;
 
 // --- BAŞLANGIÇ (INIT) ---
 function init() {
+    // MOBİL DÜZENLEMESİ: Çöp kutusunu üst menüye taşı
+    if (window.innerWidth <= 768) {
+        const topControls = document.querySelector('.top-controls');
+        const resetBtn = document.getElementById('resetBtn');
+        if (topControls && resetBtn) {
+            topControls.appendChild(resetBtn);
+        }
+    }
+
     // Sıradaki Kart (Next Card) Önizlemesini Oluştur
     nextCardEl = document.createElement('div');
     nextCardEl.className = 'next-card-preview';
@@ -134,10 +143,14 @@ function init() {
         </div>
         <h1 id="nextWordEnglish">Loading...</h1>
         <button class="speak-btn"><i class="fas fa-volume-up"></i></button>
-        <p class="tap-hint">Tap or Space</p>
+        <p class="tap-hint">TAP TO FLIP</p>
     `;
     const cardContainer = els.card.parentElement;
     cardContainer.insertBefore(nextCardEl, els.card);
+
+    // Ana Kartın içindeki yazıyı da güncelle (İlk açılış için)
+    const mainCardHint = els.card.querySelector('.tap-hint');
+    if(mainCardHint) mainCardHint.textContent = "TAP TO FLIP";
 
     loadData();
     updateStats();
@@ -532,11 +545,11 @@ function pickNewCard() {
     els.card.style.transition = '';
     els.card.classList.remove('swipe-right', 'swipe-left', 'flipped');
     
-    // Arkadaki kart animasyonunu sıfırla (Snap effect önleme)
+    // Animasyon Sıfırlama
     if (nextCardEl) {
         nextCardEl.style.transition = 'none'; 
         nextCardEl.classList.remove('promote-card');
-        void nextCardEl.offsetWidth; // Render tetikle
+        void nextCardEl.offsetWidth; 
         nextCardEl.style.transition = 'all 0.3s ease';
     }
     
@@ -754,7 +767,7 @@ function generateOptions(container, type, correctAnswer) {
     options.forEach((opt, index) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
-        // GÜNCELLENDİ: Kısayol numaralarını gizlemek için sınıf eklendi
+        // GÜNCELLENDİ: Kısayol Etiketi
         const numberPrefix = `<span class="key-shortcut" style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
         btn.innerHTML = numberPrefix + opt[type];
         if (activeMode === 'speed') {

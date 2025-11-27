@@ -135,9 +135,9 @@ body {
 /* --- DASHBOARD --- */
 .dashboard { 
     width: 100%; 
-    max-width: 600px; 
+    max-width: 800px; 
     background: var(--card-bg); 
-    padding: 15px 25px; 
+    padding: 15px 30px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
@@ -156,7 +156,7 @@ body {
 .container { width: 90%; max-width: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative; }
 .mode-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; }
 
-/* --- NEXT CARD PREVIEW (ARKADAKİ KART - FLU & ODAK DIŞI) --- */
+/* --- NEXT CARD PREVIEW (ARKADAKİ KART) --- */
 .next-card-preview {
     position: absolute;
     top: 0; 
@@ -176,7 +176,7 @@ body {
     align-items: center; justify-content: center;
     padding: 25px; box-sizing: border-box;
     
-    /* Flu Efekt */
+    /* Flu ve Silik Efekt */
     opacity: 0.5;
     filter: blur(2px) grayscale(0.6); 
     pointer-events: none; 
@@ -220,7 +220,7 @@ body.dark-mode .next-card-preview {
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
     padding: 25px; box-sizing: border-box; 
     
-    /* Opak arka plan (Yazı karışmasını engeller) */
+    /* Opak arka plan */
     background: rgba(255, 255, 255, 0.95); 
     border: 1px solid var(--border);
     backdrop-filter: blur(20px);
@@ -368,6 +368,7 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 .dict-item.error-word strong { color: var(--danger); }
 .dict-icons { display: flex; gap: 10px; align-items: center; }
 .dict-def { display: block; font-size: 0.9em; color: var(--text-sub); font-style: italic; margin-top: 4px; }
+
 .filter-btn { background: transparent; border: 1px solid var(--border); border-radius: 10px; width: 42px; height: 42px; cursor: pointer; color: var(--text-sub); transition: 0.3s; font-size: 1.1em; display: flex; align-items: center; justify-content: center; }
 .filter-btn:hover { background-color: var(--bg-color); color: var(--primary); }
 .filter-btn.active-fav { background-color: rgba(245, 158, 11, 0.1); color: var(--gold); border-color: var(--gold); }
@@ -387,7 +388,7 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 .toast-body p { margin: 0; font-size: 0.85em; color: var(--text-sub); }
 @keyframes slideUp { from { bottom: -100px; opacity: 0; } to { bottom: 30px; opacity: 1; } }
 
-/* --- GİRİŞ VE ÇIKIŞ ANİMASYONLARI (KESİNTİSİZ GEÇİŞ) --- */
+/* --- GİRİŞ VE ÇIKIŞ ANİMASYONLARI --- */
 @keyframes flyRight { 
     to { transform: translateX(300px) rotate(30deg); opacity: 0; } 
 }
@@ -398,9 +399,9 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 /* Kart Promosyon Animasyonu (Arkadan Öne Geliş) */
 @keyframes promoteToFront {
     to {
-        transform: translateY(0) scale(1); /* Öndeki konuma gel */
-        opacity: 1; /* Tam görünür ol */
-        filter: blur(0) grayscale(0); /* Bulanıklığı kaldır */
+        transform: translateY(0) scale(1);
+        opacity: 1; 
+        filter: blur(0) grayscale(0); 
         background-color: var(--card-bg); 
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
         border-color: var(--border);
@@ -411,19 +412,19 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 .swipe-left { animation: flyLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 .promote-card { animation: promoteToFront 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
-/* --- MOBİL UYUM VE DÜZELTMELER (Final Revize) --- */
+/* --- MOBİL UYUM VE DÜZELTMELER (Final - Simetrik & Temiz) --- */
 @media (max-width: 768px) {
     body { 
         padding: 10px; 
         box-sizing: border-box; 
         padding-bottom: 20px; 
-        justify-content: flex-start; /* Üstten başla */
+        justify-content: flex-start; 
     }
 
-    /* DASHBOARD (TEMİZLENMİŞ) */
+    /* DASHBOARD */
     .dashboard { 
         position: relative; 
-        flex-direction: column; /* Alt alta satırlar */
+        flex-direction: column; 
         align-items: center;
         gap: 15px; 
         padding: 15px 10px; 
@@ -431,78 +432,64 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
         margin: 10px 0 20px 0; 
     }
     
-    /* 1. Satır: Menü İkonları */
+    /* 1. Satır: Tüm İkonlar (Çöp Kutusu Dahil) */
     .top-controls { 
         width: 100%; 
-        justify-content: center; /* Ortala */
-        gap: 10px; /* İkonlar arası mesafe */
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 12px; 
+        padding-bottom: 10px;
         border-bottom: 1px solid rgba(255,255,255,0.1); 
-        padding-bottom: 15px;
         margin-bottom: 5px;
-        /* Sağda yer aç */
-        padding-right: 50px; 
-        padding-left: 10px;
-        box-sizing: border-box;
+        padding-right: 0; 
+        padding-left: 0;
     }
 
-    /* Çöp Kutusu (Reset) - Sağ Üst Köşeye Sabit */
+    /* Çöp kutusu (Reset) artık akışın içinde */
     #resetBtn {
-        position: absolute;
-        top: 15px;
-        right: 15px; 
+        position: static; 
         margin: 0;
-        z-index: 5;
     }
 
-    /* 2. Satır: Tüm İstatistikler (Total, Mastered, Streak) */
-    .stats-wrapper { 
+    /* 2. Satır: İstatistikler & Streak */
+    .stats-wrapper, .right-controls { 
         width: auto; 
         display: flex; 
-        gap: 25px; 
-        padding: 0; 
-        border: none;
-        justify-content: center;
+        justify-content: center; 
         align-items: center;
-    }
-
-    .right-controls { 
-        width: 100%;
-        justify-content: center;
-        margin-top: -5px; /* Biraz yukarı çek */
+        border: none;
     }
     
+    .dashboard > *:not(.top-controls) {
+        display: flex;
+        gap: 25px;
+        justify-content: center;
+        width: 100%;
+    }
+
     .stat-box .label { font-size: 0.65em; opacity: 0.7; }
     .stat-box .value { font-size: 1.3em; }
 
-    /* TAP HINT DÜZELTMESİ (Estetik & Tek Satır) */
+    /* TAP TO FLIP YAZISI (Düzeltilmiş) */
     .tap-hint {
-        visibility: hidden; 
-        position: relative;
-        margin-top: 25px;
-        font-size: 0;
-        height: 20px;
-    }
-    .tap-hint::after {
-        content: 'TAP TO FLIP';
-        visibility: visible;
-        position: absolute;
-        top: 0; left: 0; width: 100%;
-        text-align: center;
-        font-size: 11px; 
-        font-weight: 700;
-        letter-spacing: 4px; 
-        white-space: nowrap; 
-        color: var(--text-sub);
-        opacity: 0.7;
+        margin-top: 30px !important; 
+        font-size: 0.85em !important; 
+        font-weight: 600;
+        letter-spacing: 2px;
         text-transform: uppercase;
+        color: var(--text-sub);
+        opacity: 0.8;
+        visibility: visible !important; 
     }
-    
-    /* Quiz Kısayol Yazılarını Mobilde Gizle */
+    .tap-hint::after { content: none; } 
+
+    /* Klavye kısayollarını gizle */
     .key-shortcut { display: none !important; }
 
-    /* KART BOYUTU */
+    /* Kart Boyutları */
     .flip-card, .next-card-preview { 
-        height: 45vh; /* Ekranın %45'i */
+        height: 45vh; 
         max-height: 400px; 
         min-height: 320px; 
         width: 100%; 
@@ -514,5 +501,5 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
     .btn { padding: 16px; font-size: 0.95em; border-radius: 30px; }
     .nav-btn { font-size: 0.85em; padding: 12px; }
     h1 { font-size: 2.4em; margin: 10px 0; }
-    .speak-btn { width: 45px; height: 45px; font-size: 1.2em; }
+    .speak-btn { width: 50px; height: 50px; font-size: 1.3em; }
 }
