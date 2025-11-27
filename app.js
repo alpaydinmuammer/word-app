@@ -715,6 +715,7 @@ function generateOptions(container, type, correctAnswer) {
     options.forEach((opt, index) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
+        // Kısayol etiketi sınıfı eklendi
         const numberPrefix = `<span class="key-shortcut" style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
         btn.innerHTML = numberPrefix + opt[type];
         if (activeMode === 'speed') {
