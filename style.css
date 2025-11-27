@@ -398,21 +398,94 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
     animation: promoteToFront 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* MOBİL UYUM */
+/* MOBİL UYUM VE DÜZELTMELER */
 @media (max-width: 768px) {
-    body { padding: 10px; box-sizing: border-box; padding-bottom: 20px; }
-    .dashboard { flex-wrap: wrap; justify-content: center; gap: 15px; padding: 15px; }
-    .top-controls, .right-controls { flex: 1 1 auto; justify-content: center; }
-    .right-controls { gap: 20px; }
-    .stats-wrapper { width: 100%; display: flex; justify-content: center; gap: 30px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .stat-box .label { font-size: 0.7em; }
-    .stat-box .value { font-size: 1.3em; }
-    .flip-card { height: 45vh; max-height: 400px; width: 100%; }
-    .container { width: 100%; justify-content: flex-start; }
-    .controls { width: 100%; margin-top: 15px; margin-bottom: 10px; }
-    .btn { padding: 15px; font-size: 0.9em; border-radius: 30px; }
-    .nav-btn { font-size: 0.85em; padding: 12px; }
-    h1 { font-size: 2.2em; }
-    .def-text { font-size: 1.1em; }
-    .speak-btn { width: 40px; height: 40px; }
+    body { 
+        padding: 10px; 
+        box-sizing: border-box; 
+        padding-bottom: 20px; 
+        /* Ekranı dikey ortalamayı mobilde iptal et, üstten başlasın */
+        justify-content: flex-start; 
+    }
+
+    /* --- DASHBOARD İNCELTME --- */
+    .dashboard { 
+        flex-direction: row; /* Yan yana dizilime izin ver */
+        flex-wrap: wrap; /* Sığmayan aşağı kaysın */
+        justify-content: space-between; 
+        gap: 10px; /* Boşlukları azalttık */
+        padding: 12px 15px; /* İç boşluğu kıstık */
+        width: 100%;
+        margin: 10px 0 30px 0; /* Üst boşluğu azalttık */
+    }
+    
+    /* 1. Satır: İkonlar (Tam Genişlik) */
+    .top-controls { 
+        width: 100%; 
+        justify-content: center; /* Ortala */
+        border-bottom: 1px solid rgba(0,0,0,0.05); /* Hafif ayırıcı çizgi */
+        padding-bottom: 8px;
+        margin-bottom: 2px;
+    }
+
+    /* 2. Satır: İstatistikler (Sol Taraf) */
+    .stats-wrapper { 
+        width: auto; /* Genişlik serbest */
+        display: flex; 
+        gap: 20px; 
+        padding: 0; 
+        border: none;
+    }
+
+    /* 2. Satır: Streak ve Çöp Kutusu (Sağ Taraf) */
+    .right-controls { 
+        width: auto; /* Genişlik serbest */
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    
+    /* Mobilde stat yazılarını biraz küçültelim sığsın */
+    .stat-box .label { font-size: 0.6em; }
+    .stat-box .value { font-size: 1.1em; }
+
+    /* --- KART BOYUTU DÜZELTMESİ --- */
+    /* Hem ön hem arka kart aynı boyutta olmalı */
+    .flip-card, .next-card-preview { 
+        height: 50vh; /* Ekranın yarısı kadar yükseklik */
+        max-height: 420px; /* Çok uzamasın */
+        min-height: 350px; /* Çok kısalmasın */
+        width: 100%; 
+    }
+    
+    /* Arka kartın konumunu mobilde biraz sıkılaştıralım */
+    .next-card-preview {
+        transform: translateY(10px) scale(0.95); /* Daha az sarkma */
+    }
+
+    .container { 
+        width: 100%; 
+        justify-content: flex-start; 
+    }
+    
+    .controls { 
+        width: 100%; 
+        margin-top: 15px; 
+        margin-bottom: 10px; 
+    }
+    
+    .btn { 
+        padding: 14px; 
+        font-size: 0.9em; 
+        border-radius: 30px; 
+    }
+    
+    .nav-btn { 
+        font-size: 0.85em; 
+        padding: 12px; 
+    }
+    
+    h1 { font-size: 2em; }
+    
+    /* Mobilde "Tap or Space" yazısını biraz yukarı alalım */
+    .tap-hint { margin-top: 15px; }
 }
