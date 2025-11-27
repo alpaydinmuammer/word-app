@@ -12,7 +12,7 @@ let isFilterFav = false;
 let isFilterError = false;
 let isErrorReviewMode = false;
 
-// SWIPE (KAYDIRMA) DEĞİŞKENLERİ
+// SWIPE DEĞİŞKENLERİ
 let startX = 0;
 let isDragging = false;
 const swipeThreshold = 100; 
@@ -27,14 +27,13 @@ let streakCount = 0;
 let lastStreakDate = "";
 let availableVoices = []; 
 
-// SPEED RUN DEĞİŞKENLERİ
+// SPEED RUN
 let speedScore = 0;
 let speedTime = 60;
 let speedInterval = null;
 let speedHighScore = 0;
 let totalSpeedScore = 0;
 
-// ROZETLER (BADGES)
 const BADGES = [
     { id: 'b1', name: 'Newbie', type: 'words', count: 10, icon: '👶' },
     { id: 'b2', name: 'Student', type: 'words', count: 50, icon: '🤓' },
@@ -48,13 +47,11 @@ const BADGES = [
     { id: 's4', name: 'Time Lord', type: 'score', count: 500, icon: '⏱️' }
 ];
 
-// DOM ELEMENTLERİ
 const els = {
     flashcardMode: document.getElementById('flashcardMode'),
     quizMode: document.getElementById('quizMode'),
     sentenceMode: document.getElementById('sentenceMode'),
     speedMode: document.getElementById('speedMode'),
-    
     card: document.getElementById('cardElement'),
     en: document.getElementById('wordEnglish'),
     def: document.getElementById('wordDefinition'),
@@ -64,39 +61,32 @@ const els = {
     total: document.getElementById('totalWords'),
     learned: document.getElementById('learnedWords'),
     progressBar: document.getElementById('progressBar'),
-    
     streakBox: document.getElementById('streakBox'),
     streakCount: document.getElementById('streakCount'),
-
     btnFail: document.getElementById('btnFail'),
     btnPass: document.getElementById('btnPass'),
     btnReset: document.getElementById('resetBtn'),
     btnSpeak: document.getElementById('btnSpeak'),
     favBtn: document.getElementById('favBtn'),
-    
     themeToggle: document.getElementById('themeToggle'),
     modeToggle: document.getElementById('modeToggle'),
     badgeToggle: document.getElementById('badgeToggle'),
     errorModeBtn: document.getElementById('errorModeBtn'),
     errorCount: document.getElementById('errorCount'),
-    
     quizWord: document.getElementById('quizWord'),
     quizDef: document.getElementById('quizDefinition'),
     quizOptions: document.getElementById('quizOptions'),
     quizSpeak: document.getElementById('quizSpeak'),
     quizFavBtn: document.getElementById('quizFavBtn'),
-    
     sentenceText: document.getElementById('sentenceText'),
     sentenceOptions: document.getElementById('sentenceOptions'),
     sentFavBtn: document.getElementById('sentFavBtn'),
-    
     quizNavControls: document.getElementById('quizNavControls'),
     prevBtnQuiz: document.getElementById('prevBtnQuiz'),
     nextBtnQuiz: document.getElementById('nextBtnQuiz'),
     sentNavControls: document.getElementById('sentNavControls'),
     prevBtnSent: document.getElementById('prevBtnSent'),
     nextBtnSent: document.getElementById('nextBtnSent'),
-    
     speedStartScreen: document.getElementById('speedStartScreen'),
     startSpeedBtn: document.getElementById('startSpeedBtn'),
     speedTimer: document.getElementById('speedTimer'),
@@ -105,7 +95,6 @@ const els = {
     speedWord: document.getElementById('speedWord'),
     speedOptions: document.getElementById('speedOptions'),
     exitSpeedMode: document.getElementById('exitSpeedMode'),
-    
     dictToggle: document.getElementById('dictToggle'),
     dictModal: document.getElementById('dictionaryModal'),
     badgeModal: document.getElementById('badgeModal'),
@@ -124,16 +113,26 @@ let nextCardEl = null;
 
 // --- BAŞLANGIÇ (INIT) ---
 function init() {
-    // MOBİL DÜZENLEMESİ: Çöp kutusunu üst menüye taşı
+    // --- MOBİL DÜZEN İÇİN ELEMENT TAŞIMA (KESİN ÇÖZÜM) ---
     if (window.innerWidth <= 768) {
         const topControls = document.querySelector('.top-controls');
+        const statsWrapper = document.querySelector('.stats-wrapper');
         const resetBtn = document.getElementById('resetBtn');
+        const streakBox = document.getElementById('streakBox');
+
+        // 1. Adım: Çöp Kutusunu (Reset) üst menüye taşı (Diğer ikonların yanına)
         if (topControls && resetBtn) {
             topControls.appendChild(resetBtn);
         }
-    }
 
-    // Sıradaki Kart (Next Card) Önizlemesini Oluştur
+        // 2. Adım: Alev İkonunu (Streak) İstatistiklerin yanına taşı
+        if (statsWrapper && streakBox) {
+            statsWrapper.appendChild(streakBox);
+        }
+    }
+    // -----------------------------------------------------
+
+    // Sıradaki Kart (Next Card)
     nextCardEl = document.createElement('div');
     nextCardEl.className = 'next-card-preview';
     nextCardEl.innerHTML = `
@@ -147,8 +146,7 @@ function init() {
     `;
     const cardContainer = els.card.parentElement;
     cardContainer.insertBefore(nextCardEl, els.card);
-
-    // Ana Kartın içindeki yazıyı da güncelle (İlk açılış için)
+    
     const mainCardHint = els.card.querySelector('.tap-hint');
     if(mainCardHint) mainCardHint.textContent = "TAP TO FLIP";
 
@@ -163,23 +161,18 @@ function init() {
     els.card.addEventListener('click', (e) => {
         if(!e.target.closest('button')) els.card.classList.toggle('flipped');
     });
-    
     els.btnSpeak.addEventListener('click', (e) => { e.stopPropagation(); speak(currentCard.word); });
     els.quizSpeak.addEventListener('click', () => speak(currentCard.word));
-    
     els.favBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFav(); });
     els.quizFavBtn.addEventListener('click', toggleFav);
     els.sentFavBtn.addEventListener('click', toggleFav);
-    
     els.btnReset.addEventListener('click', resetAll);
     els.themeToggle.addEventListener('click', toggleTheme);
     els.modeToggle.addEventListener('click', toggleMode);
-    
     els.dictToggle.addEventListener('click', openDict);
     els.closeDict.addEventListener('click', () => els.dictModal.classList.add('hidden'));
     els.badgeToggle.addEventListener('click', openBadges);
     els.closeBadge.addEventListener('click', () => els.badgeModal.classList.add('hidden'));
-    
     els.errorModeBtn.addEventListener('click', () => toggleErrorReviewMode(false));
     els.searchInput.addEventListener('input', renderDict);
     els.filterFavs.addEventListener('click', () => {
@@ -192,23 +185,19 @@ function init() {
         els.filterErrors.classList.toggle('active-error', isFilterError);
         renderDict();
     });
-    
     els.startSpeedBtn.addEventListener('click', startSpeedRun);
     els.exitSpeedMode.addEventListener('click', exitSpeedGame);
-    
     els.prevBtnQuiz.addEventListener('click', () => navigateHistory('prev'));
     els.nextBtnQuiz.addEventListener('click', () => navigateHistory('next'));
     els.prevBtnSent.addEventListener('click', () => navigateHistory('prev'));
     els.nextBtnSent.addEventListener('click', () => navigateHistory('next'));
     
-    // Touch Events
     if ('ontouchstart' in window) { 
         els.card.addEventListener('touchstart', touchStart);
         els.card.addEventListener('touchmove', touchMove);
         els.card.addEventListener('touchend', touchEnd);
     }
     
-    // Klavye Kontrolleri
     document.addEventListener('keydown', (e) => {
         if(document.activeElement === els.searchInput) {
             if(e.key === 'Escape') els.dictModal.classList.add('hidden');
@@ -255,7 +244,7 @@ function init() {
     pickNewCard();
 }
 
-// --- VERİ YÖNETİMİ ---
+// --- DİĞER FONKSİYONLAR (STANDART) ---
 function loadData() {
     if(localStorage.getItem('ydspro_theme') === 'dark') toggleTheme();
     learnedCards = JSON.parse(localStorage.getItem('ydspro_learned') || '[]');
@@ -267,7 +256,6 @@ function loadData() {
     speedHighScore = parseInt(localStorage.getItem('ydspro_speed_highscore') || '0');
     totalSpeedScore = parseInt(localStorage.getItem('ydspro_total_speed_score') || '0');
     els.highScoreDisplay.textContent = speedHighScore;
-
     cardPool = wordData.filter(w => !learnedCards.includes(w.id));
 }
 
@@ -280,12 +268,10 @@ function saveData() {
     localStorage.setItem('ydspro_streak_date', lastStreakDate);
     localStorage.setItem('ydspro_speed_highscore', speedHighScore.toString());
     localStorage.setItem('ydspro_total_speed_score', totalSpeedScore.toString());
-
     updateStats();
     checkBadges();
 }
 
-// --- SPEED RUN ---
 function startSpeedRun() {
     speedScore = 0;
     speedTime = 60;
@@ -293,16 +279,12 @@ function startSpeedRun() {
     els.speedTimer.textContent = 60;
     els.speedStartScreen.classList.add('hidden');
     nextSpeedQuestion();
-    
     speedInterval = setInterval(() => {
         speedTime--;
         els.speedTimer.textContent = speedTime;
         if(speedTime <= 10) els.speedTimer.style.color = "#e74c3c";
         else els.speedTimer.style.color = "#e67e22";
-        
-        if(speedTime <= 0) {
-            endSpeedGame();
-        }
+        if(speedTime <= 0) endSpeedGame();
     }, 1000);
 }
 
@@ -316,38 +298,26 @@ function nextSpeedQuestion() {
 function checkSpeedAnswer(btn, isCorrect, container) {
     const allBtns = container.querySelectorAll('.quiz-opt');
     allBtns.forEach(b => b.disabled = true);
-    
     const speedCard = document.querySelector('.speed-content');
-
     if(isCorrect) {
         btn.classList.add('correct');
         speedScore += 10;
         totalSpeedScore += 10;
         speedTime += 2;
-        
         if(speedCard) {
             speedCard.classList.add('correct-pulse');
             setTimeout(() => speedCard.classList.remove('correct-pulse'), 500);
         }
-        
-        if(errorCards.includes(currentCard.id)) {
-            errorCards = errorCards.filter(id => id !== currentCard.id);
-        }
+        if(errorCards.includes(currentCard.id)) errorCards = errorCards.filter(id => id !== currentCard.id);
     } else {
         btn.classList.add('wrong');
-        allBtns.forEach(b => {
-            if(b.innerText.includes(currentCard.definition)) b.classList.add('correct');
-        });
+        allBtns.forEach(b => { if(b.innerText.includes(currentCard.definition)) b.classList.add('correct'); });
         speedTime -= 5;
-        
         if(speedCard) {
             speedCard.classList.add('wrong-pulse');
             setTimeout(() => speedCard.classList.remove('wrong-pulse'), 500);
         }
-        
-        if(!errorCards.includes(currentCard.id)) {
-            errorCards.push(currentCard.id);
-        }
+        if(!errorCards.includes(currentCard.id)) errorCards.push(currentCard.id);
     }
     els.speedScore.textContent = speedScore;
     els.speedTimer.textContent = speedTime;
@@ -380,7 +350,6 @@ function exitSpeedGame() {
     pickNewCard();
 }
 
-// --- YARDIMCI FONKSİYONLAR ---
 function preloadVoices() {
     availableVoices = window.speechSynthesis.getVoices();
     if (availableVoices.length === 0) {
@@ -441,9 +410,7 @@ function toggleErrorReviewMode(forceExit = false) {
     }
     if (forceExit) isErrorReviewMode = false;
     else isErrorReviewMode = !isErrorReviewMode;
-    
     document.body.classList.toggle('error-mode-active', isErrorReviewMode);
-    
     if(isErrorReviewMode) {
         els.errorModeBtn.classList.add('active-mode');
         els.errorModeBtn.innerHTML = '<i class="fas fa-times"></i> EXIT';
@@ -452,7 +419,6 @@ function toggleErrorReviewMode(forceExit = false) {
         els.errorModeBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span class="badge-count" id="errorCount">'+errorCards.length+'</span>';
         els.errorCount = document.getElementById('errorCount');
     }
-    
     cardHistory = [];
     historyIndex = -1;
     nextCard = null; 
@@ -517,9 +483,7 @@ function toggleMode() {
     historyIndex = -1;
     nextCard = null; 
 
-    if(nextCardEl) {
-        nextCardEl.style.display = (activeMode === 'flashcard') ? 'flex' : 'none';
-    }
+    if(nextCardEl) nextCardEl.style.display = (activeMode === 'flashcard') ? 'flex' : 'none';
 
     if(activeMode === 'flashcard') {
         els.modeToggle.innerHTML = '<i class="fas fa-layer-group"></i>';
@@ -539,13 +503,11 @@ function toggleMode() {
     pickNewCard();
 }
 
-// --- KART SEÇİMİ VE GÖSTERİMİ ---
 function pickNewCard() {
     els.card.style.transform = '';
     els.card.style.transition = '';
     els.card.classList.remove('swipe-right', 'swipe-left', 'flipped');
     
-    // Animasyon Sıfırlama
     if (nextCardEl) {
         nextCardEl.style.transition = 'none'; 
         nextCardEl.classList.remove('promote-card');
@@ -554,7 +516,6 @@ function pickNewCard() {
     }
     
     let activePool = [];
-    
     if (isErrorReviewMode) {
         activePool = wordData.filter(w => errorCards.includes(w.id));
         if (activePool.length === 0) {
@@ -574,8 +535,7 @@ function pickNewCard() {
         historyIndex++;
         currentCard = wordData.find(w => w.id === cardHistory[historyIndex]);
         nextCard = activePool[Math.floor(Math.random() * activePool.length)];
-    } 
-    else {
+    } else {
         if (nextCard && !isErrorReviewMode) { 
             currentCard = nextCard;
         } else {
@@ -586,7 +546,6 @@ function pickNewCard() {
         do {
             potentialNext = activePool[Math.floor(Math.random() * activePool.length)];
         } while (potentialNext.id === currentCard.id && activePool.length > 1); 
-        
         nextCard = potentialNext;
 
         historyIndex++;
@@ -609,20 +568,15 @@ function pickNewCard() {
             document.getElementById('nextWordEnglish').textContent = nextCard.word;
         }
     }
-    
     updateNavigationControls();
 }
 
 function handleAnswer(known) {
     if(activeMode !== 'flashcard') return; 
-    
     if(known) updateStreak(true);
     els.card.classList.add(known ? 'swipe-right' : 'swipe-left');
     
-    // Arkadaki kartı öne anime et
-    if (nextCardEl) {
-        nextCardEl.classList.add('promote-card');
-    }
+    if (nextCardEl) nextCardEl.classList.add('promote-card');
     
     setTimeout(() => {
         if(known) {
@@ -653,13 +607,9 @@ function updateNavigationControls() {
 
 function navigateHistory(direction) {
     if (activeMode === 'flashcard' || activeMode === 'speed') return;
-    
     const container = activeMode === 'quiz' ? els.quizOptions : els.sentenceOptions;
     const allBtns = container.querySelectorAll('.quiz-opt');
-    allBtns.forEach(b => {
-        b.disabled = false;
-        b.classList.remove('correct', 'wrong');
-    });
+    allBtns.forEach(b => { b.disabled = false; b.classList.remove('correct', 'wrong'); });
     
     if (direction === 'prev') {
         if (historyIndex > 0) {
@@ -671,7 +621,6 @@ function navigateHistory(direction) {
             updateNavigationControls();
         } else {
             showToast("You are at the start of your history.", "Hint");
-            return;
         }
     } else if (direction === 'next') {
         if (historyIndex < cardHistory.length - 1) {
@@ -683,7 +632,6 @@ function navigateHistory(direction) {
             updateNavigationControls();
         } else {
             pickNewCard();
-            return;
         }
     }
 }
@@ -767,7 +715,6 @@ function generateOptions(container, type, correctAnswer) {
     options.forEach((opt, index) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
-        // GÜNCELLENDİ: Kısayol Etiketi
         const numberPrefix = `<span class="key-shortcut" style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
         btn.innerHTML = numberPrefix + opt[type];
         if (activeMode === 'speed') {
