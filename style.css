@@ -398,7 +398,7 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
     animation: promoteToFront 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* MOBİL UYUM VE DÜZELTMELER (Final - Ortalanmış Düzen) */
+/* MOBİL UYUM VE DÜZELTMELER (Final - Simetrik & Temiz) */
 @media (max-width: 768px) {
     body { 
         padding: 10px; 
@@ -409,56 +409,71 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
 
     /* --- DASHBOARD DÜZENİ --- */
     .dashboard { 
-        position: relative; /* Çöp kutusunu konumlandırmak için referans */
+        position: relative; 
         flex-direction: row; 
         flex-wrap: wrap; 
-        justify-content: center; /* İkinci satırı (stats+streak) ortala */
-        gap: 15px; /* Total/Mastered ile Streak arasındaki boşluk */
+        justify-content: center; 
+        gap: 15px; 
         padding: 15px; 
         width: 100%;
         margin: 10px 0 30px 0; 
     }
     
-    /* 1. Satır: Menü İkonları (Ortada) */
+    /* 1. Satır: Menü İkonları (Simetrik Ortala) */
     .top-controls { 
         width: 100%; 
         justify-content: center; 
-        border-bottom: 1px solid rgba(255,255,255,0.1); /* Hafif ayırıcı */
+        border-bottom: 1px solid rgba(255,255,255,0.1); 
         padding-bottom: 12px;
         margin-bottom: 5px;
-        /* Sağ tarafta çöp kutusu olduğu için ikonları biraz sola çekerek dengeliyoruz */
-        padding-right: 0; 
+        
+        /* KRİTİK DÜZELTME: Sağdaki çöp kutusunu dengelemek için sola boşluk veriyoruz */
+        /* Böylece ikon grubu görsel olarak tam ortaya geliyor */
+        padding-left: 50px; 
+        box-sizing: border-box;
     }
 
-    /* ÖZEL HAREKET: Çöp Kutusunu (Reset) Sağ Üste Işınla */
+    /* Çöp Kutusu (Reset) - Sağ Üstte Sabit */
     #resetBtn {
         position: absolute;
-        top: 15px;  /* Dashboard padding'i ile aynı hizada */
-        right: 15px; /* En sağa yapıştır */
+        top: 15px;
+        right: 15px; 
         margin: 0;
         z-index: 5;
     }
 
-    /* 2. Satır: İstatistikler (Total & Mastered) */
-    .stats-wrapper { 
-        width: auto; 
-        display: flex; 
-        gap: 20px; 
-        padding: 0; 
-        border: none;
-        justify-content: center;
-    }
-
-    /* 2. Satır: Streak (Ateş) - Çöp kutusu gidince sadece bu kaldı */
-    .right-controls { 
-        width: auto; 
-        gap: 0;
-        justify-content: center;
-    }
-    
-    /* Mobilde stat yazılarını dengele */
+    /* 2. Satır: İstatistikler & Streak */
+    .stats-wrapper { width: auto; display: flex; gap: 20px; padding: 0; border: none; justify-content: center; }
+    .right-controls { width: auto; gap: 0; justify-content: center; }
     .stat-box .label { font-size: 0.65em; }
     .stat-box .value { font-size: 1.2em; }
+
+    /* --- GİZLENECEK KLAVYE KISAYOLLARI --- */
+    
+    /* 1. Quiz şıklarındaki [1], [2] gibi yazıları gizle */
+    .key-shortcut { display: none !important; }
+    
+    /* 2. "Tap or Space" yazısını "Tap to Flip" olarak değiştir */
+    .tap-hint {
+        visibility: hidden; /* Orijinal yazıyı gizle */
+        position: relative;
+        margin-top: 15px;
+        font-size: 0; /* Boşluk kaplamasın */
+    }
+    
+    /* Yeni yazıyı ekle */
+    .tap-hint::after {
+        content: 'Tap to Flip';
+        visibility: visible;
+        position: absolute;
+        top: 0; left: 0; width: 100%;
+        text-align: center;
+        font-size: 14px; /* Görünür font boyutu */
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-sub);
+    }
 
     /* --- KART BOYUTU DÜZELTMESİ --- */
     .flip-card, .next-card-preview { 
@@ -467,34 +482,12 @@ body.dark-mode .speed-overlay { background: rgba(0, 0, 0, 0.3); }
         min-height: 350px; 
         width: 100%; 
     }
+    .next-card-preview { transform: translateY(10px) scale(0.95); }
     
-    .next-card-preview {
-        transform: translateY(10px) scale(0.95); 
-    }
-
-    .container { 
-        width: 100%; 
-        justify-content: flex-start; 
-    }
-    
-    .controls { 
-        width: 100%; 
-        margin-top: 15px; 
-        margin-bottom: 10px; 
-    }
-    
-    .btn { 
-        padding: 15px; 
-        font-size: 0.95em; 
-        border-radius: 30px; 
-    }
-    
-    .nav-btn { 
-        font-size: 0.85em; 
-        padding: 12px; 
-    }
-    
+    /* Diğer Ayarlar */
+    .container { width: 100%; justify-content: flex-start; }
+    .controls { width: 100%; margin-top: 15px; margin-bottom: 10px; }
+    .btn { padding: 15px; font-size: 0.95em; border-radius: 30px; }
+    .nav-btn { font-size: 0.85em; padding: 12px; }
     h1 { font-size: 2.2em; }
-    
-    .tap-hint { margin-top: 15px; }
 }
