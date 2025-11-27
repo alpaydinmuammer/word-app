@@ -144,7 +144,7 @@ function init() {
     checkStreak();
     preloadVoices();
 
-    // Event Listener'lar
+    // Listener'lar
     els.btnFail.addEventListener('click', () => handleAnswer(false));
     els.btnPass.addEventListener('click', () => handleAnswer(true));
     els.card.addEventListener('click', (e) => {
@@ -272,7 +272,7 @@ function saveData() {
     checkBadges();
 }
 
-// --- SPEED RUN (TEMİZ ANİMASYONLU) ---
+// --- SPEED RUN ---
 function startSpeedRun() {
     speedScore = 0;
     speedTime = 60;
@@ -304,7 +304,6 @@ function checkSpeedAnswer(btn, isCorrect, container) {
     const allBtns = container.querySelectorAll('.quiz-opt');
     allBtns.forEach(b => b.disabled = true);
     
-    // Speed Card wrapper (Glow effect için)
     const speedCard = document.querySelector('.speed-content');
 
     if(isCorrect) {
@@ -313,7 +312,6 @@ function checkSpeedAnswer(btn, isCorrect, container) {
         totalSpeedScore += 10;
         speedTime += 2;
         
-        // Glow Efekti (Yeşil)
         if(speedCard) {
             speedCard.classList.add('correct-pulse');
             setTimeout(() => speedCard.classList.remove('correct-pulse'), 500);
@@ -329,7 +327,6 @@ function checkSpeedAnswer(btn, isCorrect, container) {
         });
         speedTime -= 5;
         
-        // Glow ve Shake Efekti (Kırmızı)
         if(speedCard) {
             speedCard.classList.add('wrong-pulse');
             setTimeout(() => speedCard.classList.remove('wrong-pulse'), 500);
@@ -339,7 +336,6 @@ function checkSpeedAnswer(btn, isCorrect, container) {
             errorCards.push(currentCard.id);
         }
     }
-    
     els.speedScore.textContent = speedScore;
     els.speedTimer.textContent = speedTime;
     saveData();
@@ -435,7 +431,6 @@ function toggleErrorReviewMode(forceExit = false) {
     
     document.body.classList.toggle('error-mode-active', isErrorReviewMode);
     
-    // BUTON DEĞİŞİMİ
     if(isErrorReviewMode) {
         els.errorModeBtn.classList.add('active-mode');
         els.errorModeBtn.innerHTML = '<i class="fas fa-times"></i> EXIT';
@@ -531,17 +526,17 @@ function toggleMode() {
     pickNewCard();
 }
 
-// --- KART SEÇİMİ & GEÇİŞ (PÜRÜZSÜZ) ---
+// --- KART SEÇİMİ VE GÖSTERİMİ ---
 function pickNewCard() {
     els.card.style.transform = '';
     els.card.style.transition = '';
     els.card.classList.remove('swipe-right', 'swipe-left', 'flipped');
     
-    // Animasyon Sıfırlama (Snap effect engelleme)
+    // Arkadaki kart animasyonunu sıfırla (Snap effect önleme)
     if (nextCardEl) {
         nextCardEl.style.transition = 'none'; 
         nextCardEl.classList.remove('promote-card');
-        void nextCardEl.offsetWidth; 
+        void nextCardEl.offsetWidth; // Render tetikle
         nextCardEl.style.transition = 'all 0.3s ease';
     }
     
@@ -611,12 +606,11 @@ function handleAnswer(known) {
     if(known) updateStreak(true);
     els.card.classList.add(known ? 'swipe-right' : 'swipe-left');
     
-    // Arka kartı öne getir
+    // Arkadaki kartı öne anime et
     if (nextCardEl) {
         nextCardEl.classList.add('promote-card');
     }
     
-    // Animasyon bitişiyle senkron (800ms)
     setTimeout(() => {
         if(known) {
             if(isErrorReviewMode) {
@@ -760,7 +754,8 @@ function generateOptions(container, type, correctAnswer) {
     options.forEach((opt, index) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-opt';
-        const numberPrefix = `<span style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
+        // GÜNCELLENDİ: Kısayol numaralarını gizlemek için sınıf eklendi
+        const numberPrefix = `<span class="key-shortcut" style="opacity:0.5; margin-right:8px; font-size:0.8em;">[${index + 1}]</span>`;
         btn.innerHTML = numberPrefix + opt[type];
         if (activeMode === 'speed') {
             btn.onclick = () => checkSpeedAnswer(btn, opt.id === currentCard.id, container);
@@ -809,7 +804,6 @@ function openDict() {
     renderDict();
 }
 
-// GÜNCELLENMİŞ SÖZLÜK (TİK VE ÜNLEM)
 function renderDict() {
     const term = els.searchInput.value.toLowerCase();
     els.wordList.innerHTML = '';
